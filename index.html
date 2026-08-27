@@ -829,7 +829,7 @@ body.dark #ai-panel{background:var(--surface)}
   /* screen content */
   .screen{
     padding:14px 14px!important;
-    padding-bottom:calc(var(--bnav-h) + env(safe-area-inset-bottom) + 16px)!important;
+    padding-bottom:calc(env(safe-area-inset-bottom) + 80px)!important;
   }
 
   /* layout collapse */
@@ -847,36 +847,7 @@ body.dark #ai-panel{background:var(--surface)}
     width:100%!important;right:0!important;left:0!important;
     bottom:0!important;border-radius:20px 20px 0 0!important;height:72vh!important;
   }
-  #ai-btn{bottom:20px!important;right:16px!important;}
-
-  /* BOTTOM NAV — show on mobile */
-  #bnav{
-    display:flex!important;
-    position:fixed;bottom:0;left:0;right:0;z-index:100;
-    height:calc(var(--bnav-h) + env(safe-area-inset-bottom));
-    padding-bottom:env(safe-area-inset-bottom);
-    background:rgba(255,255,255,.93)!important;
-    -webkit-backdrop-filter:blur(20px)!important;
-    backdrop-filter:blur(20px)!important;
-    border-top:1px solid rgba(226,229,238,.9)!important;
-    box-shadow:0 -4px 24px rgba(13,17,23,.07)!important;
-  }
-  .bni{
-    flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:4px;cursor:pointer;color:var(--txt3);
-    transition:color .2s,transform .2s;padding:6px 0;min-height:44px;
-    font-size:.56rem;font-weight:600;letter-spacing:.01em;
-    -webkit-tap-highlight-color:transparent;position:relative;
-  }
-  .bni .bico{font-size:1.35rem;line-height:1;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
-  .bni.a{color:var(--acc2)}
-  .bni.a .bico{transform:scale(1.18)}
-  .bni.a::after{
-    content:'';position:absolute;bottom:0;
-    width:32px;height:3px;border-radius:3px 3px 0 0;
-    background:linear-gradient(90deg,var(--acc2),var(--acc));
-    box-shadow:0 -2px 8px rgba(193,18,31,.35);
-  }
+  #ai-btn{bottom:20px!important;right:16px!important;left:auto!important;top:auto!important;z-index:96!important;}
 
   /* stat cards — single col on very small screens */
   .four-col{gap:8px!important}
@@ -893,10 +864,9 @@ body.dark #ai-panel{background:var(--surface)}
 <!-- ══ SPLASH SCREEN ══════════════════════════════════════════════════ -->
 <div id="splash">
   <div class="splash-logo">
-    <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <polygon points="24,4 44,16 44,32 24,44 4,32 4,16" fill="rgba(255,255,255,0.95)" stroke="none"/>
-      <polygon points="24,4 44,16 24,24" fill="rgba(255,255,255,0.4)" stroke="none"/>
-      <polygon points="4,16 24,24 24,44 4,32" fill="rgba(255,255,255,0.15)" stroke="none"/>
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="56" height="56">
+      <path d="M50,6 C50,6 54,32 67,45 C80,58 94,55 94,55 C94,55 80,58 67,71 C54,84 50,96 50,96 C50,96 46,84 33,71 C20,58 6,55 6,55 C6,55 20,58 33,45 C46,32 50,6 50,6 Z" fill="rgba(255,255,255,0.97)"/>
+      <path d="M50,24 C50,24 52,37 59,44 C66,51 79,53 79,53 C79,53 66,55 59,62 C52,69 50,82 50,82 C50,82 48,69 41,62 C34,55 21,53 21,53 C21,53 34,51 41,44 C48,37 50,24 50,24 Z" fill="rgba(255,160,160,0.45)"/>
     </svg>
   </div>
   <div class="splash-name">LIFES</div>
@@ -912,7 +882,11 @@ body.dark #ai-panel{background:var(--surface)}
   <!-- ══ SIDEBAR ══════════════════════════════════════════════════════ -->
   <aside id="sb">
     <div class="logo">
-      <div class="logo-mark">✦</div>
+      <div class="logo-mark">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="18" height="18" style="position:relative;z-index:1">
+          <path d="M50,8 C50,8 53,30 64,41 C75,52 92,55 92,55 C92,55 75,58 64,69 C53,80 50,92 50,92 C50,92 47,80 36,69 C25,58 8,55 8,55 C8,55 25,52 36,41 C47,30 50,8 50,8 Z" fill="white" opacity="0.96"/>
+        </svg>
+      </div>
       <span class="logo-text">LIFES</span>
     </div>
 
@@ -957,9 +931,8 @@ body.dark #ai-panel{background:var(--surface)}
     </button>
     <div class="mbar-logo">
       <div class="mbar-logo-mark">
-        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:16px;height:16px">
-          <polygon points="12,2 22,8 22,16 12,22 2,16 2,8" fill="rgba(255,255,255,0.9)" stroke="none"/>
-          <polygon points="12,2 22,8 12,12" fill="rgba(255,255,255,0.4)" stroke="none"/>
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
+          <path d="M50,8 C50,8 53,30 64,41 C75,52 92,55 92,55 C92,55 75,58 64,69 C53,80 50,92 50,92 C50,92 47,80 36,69 C25,58 8,55 8,55 C8,55 25,52 36,41 C47,30 50,8 50,8 Z" fill="white" opacity="0.95"/>
         </svg>
       </div>
       <span class="mbar-logo-text">LIFES</span>
@@ -1885,8 +1858,8 @@ function toggleAI(){aiOpen=!aiOpen;$('ai-panel').classList.toggle('v',aiOpen);if
     localStorage.setItem('ai-btn-pos',JSON.stringify({l:btn.style.left,t:btn.style.top}));
   }
 
-  // restore saved position
-  try{const s=JSON.parse(localStorage.getItem('ai-btn-pos')||'{}');if(s.l){btn.style.left=s.l;btn.style.top=s.t;btn.style.right='auto';btn.style.bottom='auto';}}catch(e){}
+  // restore saved position (desktop only — on mobile CSS always overrides)
+  if(window.innerWidth>767){try{const s=JSON.parse(localStorage.getItem('ai-btn-pos')||'{}');if(s.l){btn.style.left=s.l;btn.style.top=s.t;btn.style.right='auto';btn.style.bottom='auto';}}catch(e){}}
 
   btn.addEventListener('mousedown',onDown);
   btn.addEventListener('touchstart',onDown,{passive:false});
@@ -2345,12 +2318,12 @@ function addSwipeComplete(el,taskId){
 // ── BADGE ON BOTTOM NAV ────────────────────────────────────────────────
 function updateNavBadge(){
   const pending=db.tasks.filter(t=>t.date===today()&&!t.completed).length;
-  const homeBni=document.querySelector('#bnav .bni[data-s="home"]');
+  const homeBni=document.querySelector('#mnav .mni[data-s="home"]');
   if(!homeBni)return;
   let badge=homeBni.querySelector('.bni-badge');
   if(pending>0){
     if(!badge){badge=document.createElement('div');badge.className='bni-badge';homeBni.appendChild(badge);}
-    badge.textContent=pending>9?'9+':pending;
+    badge.textContent=pending>9?'9+':String(pending);
   }else if(badge){badge.remove();}
 }
 
@@ -2368,10 +2341,10 @@ function updateNavBadge(){
     closeNav();goTo(el.dataset.s);
   }));
 
-  // keep .mni active state in sync
-  const origGoTo=goTo;
-  window.goTo=function(s){
-    origGoTo(s);
+  // keep .mni active state in sync with goTo calls
+  const _navGoTo=goTo;
+  goTo=function(s){
+    _navGoTo(s);
     document.querySelectorAll('.mni').forEach(x=>x.classList.toggle('a',x.dataset.s===s));
   };
 })();
@@ -2461,20 +2434,20 @@ function showCtxMenu(x,y,taskId){
   setTimeout(()=>document.addEventListener('click',()=>{ctxMenu?.remove();ctxMenu=null;},{once:true}),10);
 }
 
-// attach long-press to task rows
-const origAttach=attachEvents;
-function attachEvents(container){
-  origAttach(container);
+// attach long-press context menu to task rows (extend existing attachEvents)
+const _baseAttach=attachEvents;
+attachEvents=function(container){
+  _baseAttach(container);
   container.querySelectorAll('.tr[data-id]').forEach(el=>{
     let timer,moved=false;
-    el.addEventListener('touchstart',e=>{moved=false;timer=setTimeout(()=>{
+    el.addEventListener('touchstart',()=>{moved=false;timer=setTimeout(()=>{
       if(!moved){haptic('medium');const r=el.getBoundingClientRect();showCtxMenu(r.left+r.width/2-90,r.bottom,el.dataset.id);}
     },500);},{passive:true});
     el.addEventListener('touchmove',()=>{moved=true;clearTimeout(timer);},{passive:true});
     el.addEventListener('touchend',()=>clearTimeout(timer),{passive:true});
     el.addEventListener('contextmenu',e=>{e.preventDefault();showCtxMenu(e.clientX,e.clientY,el.dataset.id);});
   });
-}
+};
 
 // ── SHARE TASK ────────────────────────────────────────────────────────
 async function shareTask(t){
@@ -2495,7 +2468,7 @@ if(settings.notif&&'Notification' in window&&Notification.permission==='granted'
 
 // ── PWA MANIFEST (inline blob) ─────────────────────────────────────────
 (function(){
-  const icon='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%23E63946"/><text y=".9em" font-size="72" x="50%" text-anchor="middle" font-family="sans-serif" fill="white">✦</text></svg>';
+  const icon='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="%23FF3347"/><stop offset="1" stop-color="%237A0010"/></linearGradient><linearGradient id="sh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,0.18)"/><stop offset="1" stop-color="rgba(255,255,255,0)"/></linearGradient></defs><rect width="100" height="100" rx="22" fill="url(%23bg)"/><rect width="100" height="55" rx="22" fill="url(%23sh)"/><path d="M50,14 C50,14 53,34 62,43 C71,52 91,55 91,55 C91,55 71,58 62,67 C53,76 50,96 50,96 C50,96 47,76 38,67 C29,58 9,55 9,55 C9,55 29,52 38,43 C47,34 50,14 50,14 Z" fill="white" opacity="0.96"/><path d="M50,28 C50,28 51.5,37 55,40.5 C58.5,44 67.5,45.5 67.5,45.5 C67.5,45.5 58.5,47 55,50.5 C51.5,54 50,63 50,63 C50,63 48.5,54 45,50.5 C41.5,47 32.5,45.5 32.5,45.5 C32.5,45.5 41.5,44 45,40.5 C48.5,37 50,28 50,28 Z" fill="rgba(255,200,200,0.4)"/></svg>';
   const manifest={
     name:'LIFES',short_name:'LIFES',
     start_url:'.',display:'standalone',
