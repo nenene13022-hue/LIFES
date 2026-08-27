@@ -1823,7 +1823,7 @@ $('sb-export').addEventListener('click',()=>{
 // ── AI CHAT ────────────────────────────────────────────────────────────
 let aiOpen=false,aiKey=localStorage.getItem('lp_ai_key')||'';
 const GEMINI_MODEL='gemini-3.6-flash';
-function toggleAI(){aiOpen=!aiOpen;$('ai-panel').classList.toggle('v',aiOpen);if(aiOpen&&!$('ai-msgs').children.length)initAI();}
+function toggleAI(){aiOpen=!aiOpen;$('ai-panel').classList.toggle('v',aiOpen);$('ai-btn').style.display=aiOpen?'none':'flex';if(aiOpen&&!$('ai-msgs').children.length)initAI();}
 // ── AI BUTTON DRAG ─────────────────────────────────────────────────────
 (function(){
   const btn=$('ai-btn');
@@ -1889,7 +1889,7 @@ function toggleAI(){aiOpen=!aiOpen;$('ai-panel').classList.toggle('v',aiOpen);if
 })();
 
 $('ai-key-dismiss').addEventListener('click',()=>{$('ai-key-row').style.display='none';});
-$('ai-close').addEventListener('click',()=>{aiOpen=false;$('ai-panel').classList.remove('v');});
+$('ai-close').addEventListener('click',()=>{aiOpen=false;$('ai-panel').classList.remove('v');$('ai-btn').style.display='flex';});
 
 function initAI(){
   addAIMsg('bot','שלום! 👋 אני המזכירה החכמה שלך ב-LIFES.\n\n🚀 כדי להפעיל אותי (חינם לגמרי):\n1. כנס ל-aistudio.google.com\n2. התחבר עם חשבון Google\n3. לחץ **Get API Key** ← **Create API key**\n4. העתק את המפתח והדבק למטה');
@@ -2158,7 +2158,7 @@ $('ai-inp').addEventListener('keydown',e=>{if(e.key==='Enter')handleAISend();});
 // Close AI panel when clicking outside
 document.addEventListener('click',e=>{
   if(aiOpen&&!$('ai-panel').contains(e.target)&&e.target!=$('ai-btn'))
-    {aiOpen=false;$('ai-panel').classList.remove('v');}
+    {aiOpen=false;$('ai-panel').classList.remove('v');$('ai-btn').style.display='flex';}
 });
 
 // ── CONFETTI ───────────────────────────────────────────────────────────
