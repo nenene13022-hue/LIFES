@@ -656,6 +656,62 @@ html,body{letter-spacing:-.01em}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
+/* ── DARK MODE ─────────────────────────────────────────────────────── */
+body.dark{
+  --bg:#0F1117;--surface:#1A1D27;--s2:#222536;--s3:#2A2E40;
+  --txt:#E8EAF0;--txt2:#9CA3AF;--txt3:#6B7280;--txt4:#374151;
+  --border:#2E3347;--border2:#3A4055;
+  --shadow:0 1px 3px rgba(0,0,0,.4),0 4px 16px rgba(0,0,0,.3);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.5);
+}
+body.dark #bnav{background:rgba(26,29,39,.95)!important;border-top-color:#2E3347!important}
+body.dark .modal-box{background:var(--surface)}
+body.dark #ai-panel{background:var(--surface)}
+
+/* ── SETTINGS SCREEN ─────────────────────────────────────────────── */
+.stg-section{background:var(--surface);border-radius:var(--r);padding:0;margin-bottom:16px;
+  border:1.5px solid var(--border);overflow:hidden}
+.stg-section-title{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--txt3);padding:12px 16px 8px;border-bottom:1px solid var(--border)}
+.stg-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;
+  border-bottom:1px solid var(--border)}
+.stg-row:last-child{border-bottom:none}
+.stg-label{font-size:.87rem;font-weight:600;color:var(--txt)}
+.stg-desc{font-size:.75rem;color:var(--txt3);margin-top:2px}
+.stg-select{font-size:.82rem;background:var(--s2);border:1.5px solid var(--border);
+  border-radius:var(--r-sm);padding:6px 10px;color:var(--txt);cursor:pointer}
+.stg-btn{width:100%;margin:8px 16px;width:calc(100% - 32px);padding:11px;border-radius:var(--r-sm);
+  background:var(--acc2-bg);color:var(--acc2);font-weight:600;font-size:.84rem;cursor:pointer;
+  border:none;transition:background .15s}
+.stg-btn:hover{background:rgba(108,95,252,.2)}
+.stg-btn-sm{padding:7px 14px;border-radius:var(--r-sm);background:var(--s2);
+  border:1.5px solid var(--border);color:var(--txt2);font-size:.8rem;font-weight:600;cursor:pointer}
+
+/* toggle switch */
+.toggle-sw{position:relative;display:inline-block;width:48px;height:28px;flex-shrink:0}
+.toggle-sw input{opacity:0;width:0;height:0}
+.toggle-knob{position:absolute;inset:0;background:var(--border2);border-radius:28px;
+  cursor:pointer;transition:background .25s}
+.toggle-knob::before{content:'';position:absolute;left:3px;bottom:3px;
+  width:22px;height:22px;border-radius:50%;background:#fff;
+  transition:transform .25s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.toggle-sw input:checked+.toggle-knob{background:var(--acc2)}
+.toggle-sw input:checked+.toggle-knob::before{transform:translateX(20px)}
+
+/* ── TASK SWIPE (swipe-to-complete) ─────────────────────────────── */
+.tr-wrap{position:relative;overflow:hidden;border-radius:var(--r-sm)}
+.tr-swipe-bg{position:absolute;inset:0;background:linear-gradient(90deg,var(--acc),#00C97B);
+  display:flex;align-items:center;padding:0 18px;opacity:0;transition:opacity .2s}
+.tr-swipe-bg svg{width:22px;height:22px;stroke:#fff;stroke-width:2.5;flex-shrink:0}
+.tr-item{position:relative;background:var(--surface);transition:transform .25s ease,opacity .2s}
+.tr-item.swiping{transition:none}
+
+/* ── BOTTOM NAV BADGE ───────────────────────────────────────────── */
+.bni-badge{position:absolute;top:4px;right:calc(50% - 20px);background:var(--acc3);
+  color:#fff;font-size:.5rem;font-weight:700;min-width:16px;height:16px;border-radius:8px;
+  padding:0 4px;display:flex;align-items:center;justify-content:center;line-height:1}
+
 /* ── MOBILE / PWA ──────────────────────────────────────────────────── */
 :root{--bnav-h:62px}
 
@@ -761,6 +817,7 @@ html,body{letter-spacing:-.01em}
       <div class="sni" data-s="ex"><span class="ico">📚</span>תרגילים</div>
       <div class="sni" data-s="stats"><span class="ico">📊</span>סטטיסטיקה</div>
       <div class="sni" data-s="journal"><span class="ico">📓</span>יומן</div>
+      <div class="sni" data-s="settings"><span class="ico">⚙️</span>הגדרות</div>
     </nav>
 
     <div class="sb-div"></div>
@@ -778,6 +835,7 @@ html,body{letter-spacing:-.01em}
     <div class="bni" data-s="ex"><span class="bico">📚</span>תרגילים</div>
     <div class="bni" data-s="stats"><span class="bico">📊</span>סטטיסטיקה</div>
     <div class="bni" data-s="journal"><span class="bico">📓</span>יומן</div>
+    <div class="bni" data-s="settings"><span class="bico">⚙️</span>הגדרות</div>
   </nav>
 
   <!-- ══ MAIN ════════════════════════════════════════════════════════ -->
@@ -918,6 +976,75 @@ html,body{letter-spacing:-.01em}
         <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.2rem;letter-spacing:-.02em;margin-bottom:16px" id="srch-hdr">חיפוש</div>
         <div class="card" id="srch-res"></div>
       </div>
+
+      <!-- SETTINGS -->
+      <div class="screen hidden" id="s-settings">
+        <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;letter-spacing:-.03em;margin-bottom:20px">הגדרות ⚙️</div>
+
+        <!-- Notifications -->
+        <div class="stg-section">
+          <div class="stg-section-title">🔔 התראות</div>
+          <div class="stg-row">
+            <div>
+              <div class="stg-label">תזכורות למשימות</div>
+              <div class="stg-desc">קבל התראה לפני שעת המשימה</div>
+            </div>
+            <label class="toggle-sw"><input type="checkbox" id="notif-toggle"><span class="toggle-knob"></span></label>
+          </div>
+          <div class="stg-row" id="notif-advance-row">
+            <div class="stg-label">זמן מראש</div>
+            <select class="stg-select" id="notif-advance">
+              <option value="0">בדיוק בשעה</option>
+              <option value="5">5 דקות לפני</option>
+              <option value="10" selected>10 דקות לפני</option>
+              <option value="15">15 דקות לפני</option>
+              <option value="30">30 דקות לפני</option>
+              <option value="60">שעה לפני</option>
+            </select>
+          </div>
+          <button class="stg-btn" id="test-notif-btn">🔔 שלח התראת בדיקה</button>
+        </div>
+
+        <!-- Appearance -->
+        <div class="stg-section">
+          <div class="stg-section-title">🎨 מראה</div>
+          <div class="stg-row">
+            <div>
+              <div class="stg-label">מצב לילה</div>
+              <div class="stg-desc">עיצוב כהה נוח לעיניים</div>
+            </div>
+            <label class="toggle-sw"><input type="checkbox" id="dark-toggle"><span class="toggle-knob"></span></label>
+          </div>
+          <div class="stg-row">
+            <div class="stg-label">גודל טקסט</div>
+            <select class="stg-select" id="font-size-sel">
+              <option value="14">קטן</option>
+              <option value="16" selected>רגיל</option>
+              <option value="18">גדול</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Data -->
+        <div class="stg-section">
+          <div class="stg-section-title">💾 נתונים</div>
+          <div class="stg-row">
+            <div class="stg-label">גיבוי נתונים</div>
+            <button class="stg-btn-sm" id="stg-export">⬇ ייצא</button>
+          </div>
+          <div class="stg-row">
+            <div class="stg-label">ייבוא נתונים</div>
+            <label class="stg-btn-sm" style="cursor:pointer">📂 ייבא<input type="file" id="stg-import-inp" accept=".json" style="display:none"></label>
+          </div>
+        </div>
+
+        <!-- About -->
+        <div class="stg-section">
+          <div class="stg-section-title">ℹ️ אודות</div>
+          <div class="stg-row"><div class="stg-label">גרסה</div><div class="stg-desc">LIFES v3.0</div></div>
+          <div class="stg-row"><div class="stg-label">אחסון</div><div class="stg-desc" id="stg-storage-info">מחשב...</div></div>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -1016,7 +1143,7 @@ const FRESH=()=>({tasks:[],moods:{},habitLogs:{},notes:{},exercises:[],
     {id:'h3',name:'קריאה',icon:'📚',color:'#8B5CF6'},
     {id:'h4',name:'מדיטציה',icon:'🧘',color:'#F59E0B'}]});
 let db=(()=>{try{const r=localStorage.getItem(KEY);if(r){const p=JSON.parse(r);const f=FRESH();return{...f,...p,habits:p.habits||f.habits,exercises:p.exercises||[]};}}catch(e){}return FRESH();})();
-const save=()=>localStorage.setItem(KEY,JSON.stringify(db));
+const save=()=>{localStorage.setItem(KEY,JSON.stringify(db));if(typeof scheduleNotifsIfEnabled==='function')scheduleNotifsIfEnabled();};
 
 // ── UTILS ──────────────────────────────────────────────────────────────
 const $=id=>document.getElementById(id);
@@ -1056,6 +1183,7 @@ function goTo(s){
   else if(s==='stats')renderStats();
   else if(s==='journal')renderJournal();
   else if(s==='ex')renderExercises();
+  else if(s==='settings')renderSettings();
 }
 document.querySelectorAll('.sni,.bni').forEach(el=>el.addEventListener('click',()=>goTo(el.dataset.s)));
 
@@ -1189,6 +1317,13 @@ function renderTasksHome(){
   });
   if(!html)html=qaddHTML('u',td,'הוסף משימה...');
   $('tasks-home').innerHTML=html;attachEvents($('tasks-home'));
+  // add swipe-to-complete on mobile
+  if(window.innerWidth<=767){
+    all.filter(t=>!t.completed).forEach(t=>{
+      const el=$('tasks-home').querySelector(`.tr[data-id="${t.id}"]`);
+      if(el)addSwipeComplete(el,t.id);
+    });
+  }
 
   const ov=db.tasks.filter(t=>t.date<td&&!t.completed);
   if(ov.length){
@@ -1242,7 +1377,7 @@ function renderWeekTasks(){
     :`<div class="emp"><div class="emp-ico">🗓</div><div class="emp-t">אין משימות השבוע</div></div>`;
 }
 
-function renderHome(){renderHeader();renderFocusCard();renderTasksHome();renderTomorrowTasks();renderWeekTasks();}
+function renderHome(){renderHeader();renderFocusCard();renderTasksHome();renderTomorrowTasks();renderWeekTasks();updateNavBadge();}
 
 // ── CALENDAR ───────────────────────────────────────────────────────────
 function renderCal(){
@@ -1903,8 +2038,186 @@ function confetti(el){
   }
 }
 
+// ── SETTINGS & DARK MODE ───────────────────────────────────────────────
+const settings={
+  dark: localStorage.getItem('lp_dark')==='1',
+  notif: localStorage.getItem('lp_notif')==='1',
+  notifAdvance: parseInt(localStorage.getItem('lp_notif_adv')||'10'),
+  fontSize: parseInt(localStorage.getItem('lp_fontsize')||'16'),
+};
+
+function applyDark(on){
+  document.body.classList.toggle('dark',on);
+  settings.dark=on;
+  localStorage.setItem('lp_dark',on?'1':'0');
+}
+function applyFontSize(sz){
+  document.documentElement.style.fontSize=sz+'px';
+  settings.fontSize=sz;
+  localStorage.setItem('lp_fontsize',sz);
+}
+
+// apply on load
+applyDark(settings.dark);
+applyFontSize(settings.fontSize);
+
+function renderSettings(){
+  const $dark=$('dark-toggle');const $notif=$('notif-toggle');
+  const $adv=$('notif-advance');const $advRow=$('notif-advance-row');
+  const $fsz=$('font-size-sel');
+  if($dark)$dark.checked=settings.dark;
+  if($notif)$notif.checked=settings.notif;
+  if($adv)$adv.value=settings.notifAdvance;
+  if($advRow)$advRow.style.display=settings.notif?'flex':'none';
+  if($fsz)$fsz.value=settings.fontSize;
+
+  // storage info
+  try{
+    const sz=JSON.stringify(localStorage).length;
+    const kb=(sz/1024).toFixed(1);
+    const stgEl=$('stg-storage-info');if(stgEl)stgEl.textContent=`${kb} KB מתוך ~5 MB`;
+  }catch(e){}
+
+  // Wire events once
+  if($dark&&!$dark._wired){$dark._wired=true;
+    $dark.addEventListener('change',()=>applyDark($dark.checked));}
+  if($notif&&!$notif._wired){$notif._wired=true;
+    $notif.addEventListener('change',()=>{
+      settings.notif=$notif.checked;
+      localStorage.setItem('lp_notif',$notif.checked?'1':'0');
+      if($advRow)$advRow.style.display=$notif.checked?'flex':'none';
+      if($notif.checked)requestNotifPerm();
+    });}
+  if($adv&&!$adv._wired){$adv._wired=true;
+    $adv.addEventListener('change',()=>{settings.notifAdvance=parseInt($adv.value);localStorage.setItem('lp_notif_adv',$adv.value);scheduleAllNotifs();});}
+  if($fsz&&!$fsz._wired){$fsz._wired=true;
+    $fsz.addEventListener('change',()=>applyFontSize(parseInt($fsz.value)));}
+
+  const $testBtn=$('test-notif-btn');
+  if($testBtn&&!$testBtn._wired){$testBtn._wired=true;
+    $testBtn.addEventListener('click',sendTestNotif);}
+
+  const $exp=$('stg-export');
+  if($exp&&!$exp._wired){$exp._wired=true;
+    $exp.addEventListener('click',()=>$('sb-export').click());}
+
+  const $imp=$('stg-import-inp');
+  if($imp&&!$imp._wired){$imp._wired=true;
+    $imp.addEventListener('change',e=>{
+      const f=e.target.files[0];if(!f)return;
+      const r=new FileReader();r.onload=ev=>{
+        try{const d=JSON.parse(ev.target.result);if(d.tasks||d.exercises){Object.assign(db,d);save();renderHome();alert('✅ ייבוא הצליח!');}}
+        catch(err){alert('שגיאה בייבוא');}
+      };r.readAsText(f);e.target.value='';
+    });}
+}
+
+// ── NOTIFICATIONS ──────────────────────────────────────────────────────
+const notifTimers=new Map();
+
+async function requestNotifPerm(){
+  if(!('Notification' in window))return false;
+  if(Notification.permission==='granted')return true;
+  const p=await Notification.requestPermission();
+  return p==='granted';
+}
+
+function scheduleAllNotifs(){
+  // clear existing
+  notifTimers.forEach(t=>clearTimeout(t));notifTimers.clear();
+  if(!settings.notif||Notification.permission!=='granted')return;
+  const now=Date.now();
+  db.tasks.filter(t=>!t.completed&&t.time&&t.date>=today()).forEach(t=>{
+    const dt=new Date(`${t.date}T${t.time}`);
+    const fireAt=dt.getTime()-(settings.notifAdvance*60000);
+    const delay=fireAt-now;
+    if(delay>0&&delay<7*24*60*60*1000){// within 7 days
+      const tid=setTimeout(()=>{
+        new Notification('LIFES ✦',{
+          body:`⏰ ${settings.notifAdvance>0?settings.notifAdvance+' דקות לפני: ':''}"${t.title}"`,
+          icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%2300A86B"/><text y=".9em" font-size="72" x="50%" text-anchor="middle" font-family="sans-serif" fill="white">✦</text></svg>',
+          badge:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%2300A86B"/></svg>',
+          tag:t.id,vibrate:[200,100,200],
+          data:{taskId:t.id}
+        });
+      },delay);
+      notifTimers.set(t.id,tid);
+    }
+  });
+}
+
+async function sendTestNotif(){
+  const ok=await requestNotifPerm();
+  if(!ok){alert('לא ניתנה הרשאה להתראות — אנא אפשר בהגדרות הדפדפן/מכשיר');return;}
+  settings.notif=true;localStorage.setItem('lp_notif','1');
+  const $n=$('notif-toggle');if($n)$n.checked=true;
+  new Notification('LIFES ✦',{
+    body:'✅ התראות פועלות! תקבל תזכורות לפני משימות.',
+    icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%2300A86B"/><text y=".9em" font-size="72" x="50%" text-anchor="middle" font-family="sans-serif" fill="white">✦</text></svg>',
+    vibrate:[200,100,200]
+  });
+}
+
+// call after every task save
+function scheduleNotifsIfEnabled(){
+  if(settings.notif&&Notification.permission==='granted')scheduleAllNotifs();
+}
+
+// ── SWIPE-TO-COMPLETE ──────────────────────────────────────────────────
+function addSwipeComplete(el,taskId){
+  let startX=0,dx=0,swiping=false;
+  const THRESHOLD=80;
+  const item=el;
+  const bg=document.createElement('div');bg.className='tr-swipe-bg';
+  bg.innerHTML=`<svg viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12"/></svg>`;
+  item.parentElement?.insertBefore(bg,item);
+
+  function onStart(e){
+    startX=e.touches?e.touches[0].clientX:e.clientX;
+    dx=0;swiping=true;item.classList.add('swiping');
+  }
+  function onMove(e){
+    if(!swiping)return;
+    dx=(e.touches?e.touches[0].clientX:e.clientX)-startX;
+    if(dx<0){dx=0;return;}
+    item.style.transform=`translateX(${dx}px)`;
+    bg.style.opacity=Math.min(dx/THRESHOLD,1);
+    if(dx>5)e.preventDefault();
+  }
+  function onEnd(){
+    if(!swiping)return;swiping=false;item.classList.remove('swiping');
+    if(dx>=THRESHOLD){
+      item.style.transform=`translateX(${window.innerWidth}px)`;
+      item.style.opacity='0';
+      setTimeout(()=>{
+        const t=db.tasks.find(x=>x.id===taskId);
+        if(t&&!t.completed){t.completed=true;save();renderHome();scheduleNotifsIfEnabled();}
+      },280);
+    }else{item.style.transform='';bg.style.opacity=0;}
+  }
+  item.addEventListener('touchstart',onStart,{passive:true});
+  item.addEventListener('touchmove',onMove,{passive:false});
+  item.addEventListener('touchend',onEnd);
+}
+
+// ── BADGE ON BOTTOM NAV ────────────────────────────────────────────────
+function updateNavBadge(){
+  const pending=db.tasks.filter(t=>t.date===today()&&!t.completed).length;
+  const homeBni=document.querySelector('#bnav .bni[data-s="home"]');
+  if(!homeBni)return;
+  let badge=homeBni.querySelector('.bni-badge');
+  if(pending>0){
+    if(!badge){badge=document.createElement('div');badge.className='bni-badge';homeBni.appendChild(badge);}
+    badge.textContent=pending>9?'9+':pending;
+  }else if(badge){badge.remove();}
+}
+
 // ── INIT ───────────────────────────────────────────────────────────────
 renderHome();
+// init notifications if already permitted
+if(settings.notif&&'Notification' in window&&Notification.permission==='granted'){
+  scheduleAllNotifs();
+}
 
 // ── PWA MANIFEST (inline blob) ─────────────────────────────────────────
 (function(){

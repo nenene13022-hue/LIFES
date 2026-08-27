@@ -1,4 +1,4 @@
-const CACHE = 'lifes-v3';
+const CACHE = 'lifes-v4';
 const ASSETS = ['./'];
 
 self.addEventListener('install', e => {
@@ -23,4 +23,9 @@ self.addEventListener('fetch', e => {
       return res;
     }))
   );
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  e.waitUntil(clients.openWindow('/'));
 });
