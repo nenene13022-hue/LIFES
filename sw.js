@@ -1,4 +1,4 @@
-const CACHE = 'lifes-v4';
+const CACHE = 'lifes-v5';
 const ASSETS = ['./'];
 
 self.addEventListener('install', e => {
