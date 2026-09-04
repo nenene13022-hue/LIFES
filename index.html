@@ -139,6 +139,30 @@ input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-ca
 .stat-n{font-family:'Plus Jakarta Sans',sans-serif;font-size:1.6rem;font-weight:700;line-height:1;color:var(--txt);letter-spacing:-.02em;-webkit-text-fill-color:var(--txt)}
 .stat-l{font-size:.65rem;color:var(--txt3);margin-top:4px;font-weight:500;letter-spacing:.02em}
 
+/* ── HOME TOP BAR ─────────────────────────────────────────────────── */
+#home-top-bar{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding:14px 16px;
+  background:linear-gradient(135deg,var(--acc2),var(--acc));border-radius:var(--r);color:#fff}
+.htb-quote{flex:1;font-size:.78rem;font-style:italic;line-height:1.45;opacity:.92}
+.htb-stats{display:flex;gap:16px;flex-shrink:0}
+.htb-stat{text-align:center}
+.htb-stat-n{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;line-height:1}
+.htb-stat-l{font-size:.55rem;opacity:.75;text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+
+/* ── HABITS ROW ───────────────────────────────────────────────────── */
+#home-habits-row{margin-bottom:14px}
+.habits-row-inner{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+.habits-row-inner::-webkit-scrollbar{height:0}
+.hc{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;
+  padding:10px 14px;border-radius:var(--r-sm);background:var(--surface);
+  border:1.5px solid var(--border);cursor:pointer;transition:all .18s;min-width:64px}
+.hc:hover{border-color:var(--border2);background:var(--s2)}
+.hc.done{border-width:2px}
+.hc-icon{font-size:1.3rem}
+.hc-name{font-size:.62rem;font-weight:600;color:var(--txt2);text-align:center;max-width:60px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hc-streak{font-size:.55rem;color:var(--txt3)}
+.hc.done .hc-name{font-weight:700}
+
 /* ── FOCUS CARD ───────────────────────────────────────────────────── */
 .focus-c{border-radius:var(--r);padding:20px;
   background:linear-gradient(135deg,rgba(230,57,70,.06),rgba(193,18,31,.06));
@@ -442,8 +466,9 @@ input[type=date]::-webkit-calendar-picker-indicator,input[type=time]::-webkit-ca
 #ai-hdr .ai-status{font-size:.62rem;color:var(--acc);display:flex;align-items:center;gap:3px}
 #ai-hdr .ai-close{margin-right:auto;width:24px;height:24px;border-radius:50%;
   background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:.65rem;color:var(--txt2)}
-#ai-msgs{flex:1;overflow-y:auto;padding:14px 14px 0;display:flex;flex-direction:column;gap:10px;scrollbar-width:none}
-#ai-msgs::-webkit-scrollbar{display:none}
+#ai-msgs{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 14px 0;display:flex;flex-direction:column;gap:10px;scrollbar-width:thin;touch-action:pan-y;-webkit-overflow-scrolling:touch}
+#ai-msgs::-webkit-scrollbar{width:3px}
+#ai-msgs::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 .ai-msg{display:flex;flex-direction:column;gap:3px;max-width:85%}
 .ai-msg.bot{align-self:flex-start}
 .ai-msg.user{align-self:flex-end;align-items:flex-end}
@@ -814,23 +839,19 @@ body.dark #ai-panel{background:var(--surface)}
     padding-top:env(safe-area-inset-top)}
   input,textarea,select{font-size:16px!important}
 
-  /* hide desktop sidebar — hard override */
+  /* hide desktop sidebar & header */
   #sb{display:none!important}
-
-  /* hide top header — hamburger nav handles navigation */
   #hdr{display:none!important}
-  /* hide bottom nav — replaced by hamburger */
   #bnav{display:none!important}
-  /* show mobile top bar */
-  #mbar{display:flex!important}
-  /* offset screen content below mbar */
-  #main{padding-top:calc(56px + env(safe-area-inset-top))!important}
-  .screen{padding-top:20px!important}
 
-  /* screen content */
+  /* mobile top bar */
+  #mbar{display:flex!important}
+  #main{padding-top:calc(56px + env(safe-area-inset-top))!important}
+
+  /* screen content — generous bottom padding for home bar */
   .screen{
-    padding:14px 14px!important;
-    padding-bottom:calc(env(safe-area-inset-bottom) + 80px)!important;
+    padding:16px 16px!important;
+    padding-bottom:calc(env(safe-area-inset-bottom) + 100px)!important;
   }
 
   /* layout collapse */
@@ -839,20 +860,62 @@ body.dark #ai-panel{background:var(--surface)}
   .four-col{grid-template-columns:1fr 1fr!important}
   .hb-grid{grid-template-columns:1fr 1fr!important}
 
+  /* larger touch targets for task rows */
+  .tr{min-height:52px!important;padding:12px 10px!important}
+  .cb{width:26px!important;height:26px!important;flex-shrink:0}
+  .trt{font-size:.9rem!important;line-height:1.4}
+  .tstar,.tdel{width:36px!important;height:36px!important;font-size:1rem!important}
+
+  /* cards more breathing room */
+  .card.p16{padding:14px!important}
+  .card.p20{padding:16px!important}
+
+  /* focus card */
+  .focus-c{padding:16px!important}
+  .focus-title{font-size:1rem!important}
+
+  /* home top bar — stack on small */
+  #home-top-bar{flex-direction:column!important;gap:8px!important;text-align:center}
+  .htb-stats{justify-content:center}
+
+  /* habits row cards bigger tap area */
+  .hc{padding:12px 16px!important;min-width:72px!important}
+  .hc-icon{font-size:1.5rem!important}
+
+  /* stat cards */
+  .four-col{gap:8px!important}
+  .stat-n{font-size:1.4rem!important}
+
   /* exercises */
   .ex-folders-grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr))!important}
   .ex-flip-grid{grid-template-columns:repeat(auto-fill,minmax(155px,1fr))!important}
 
-  /* AI */
+  /* AI panel — full width sheet */
   #ai-panel{
     width:100%!important;right:0!important;left:0!important;
-    bottom:0!important;border-radius:20px 20px 0 0!important;height:72vh!important;
+    bottom:0!important;border-radius:22px 22px 0 0!important;
+    height:78dvh!important;height:78vh!important;
   }
   #ai-btn{z-index:96!important;}
 
-  /* stat cards — single col on very small screens */
-  .four-col{gap:8px!important}
-  .stat-n{font-size:1.4rem!important}
+  /* AI input row bigger on mobile */
+  #ai-inp{padding:12px 16px!important;font-size:.9rem!important}
+  #ai-img-btn{width:44px!important;height:44px!important}
+  #ai-send{width:44px!important;height:44px!important}
+
+  /* journal textarea bigger */
+  .j-ta{min-height:220px!important;font-size:.95rem!important;line-height:1.7!important}
+
+  /* modal bottom sheet feel */
+  #modal{border-radius:22px 22px 0 0!important;bottom:0!important;top:auto!important;
+    max-height:92dvh!important;max-height:92vh!important;overflow-y:auto}
+
+  /* section titles */
+  .section-title{font-size:.68rem!important;margin-bottom:10px!important}
+
+  /* nav items bigger tap */
+  .mni{min-height:88px!important;padding:18px 8px!important}
+  .mnico{font-size:1.8rem!important}
 }
 
 /* very small phones */
@@ -930,7 +993,7 @@ body.dark #ai-panel{background:var(--surface)}
       <div class="ham-line"></div>
       <div class="ham-line"></div>
     </button>
-    <div class="mbar-logo">
+    <div class="mbar-logo" onclick="goTo('home')" style="cursor:pointer;-webkit-tap-highlight-color:transparent">
       <div class="mbar-logo-mark">
         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" width="16" height="16">
           <path d="M50,8 C50,8 53,30 64,41 C75,52 92,55 92,55 C92,55 75,58 64,69 C53,80 50,92 50,92 C50,92 47,80 36,69 C25,58 8,55 8,55 C8,55 25,52 36,41 C47,30 50,8 50,8 Z" fill="white" opacity="0.95"/>
@@ -972,6 +1035,8 @@ body.dark #ai-panel{background:var(--surface)}
     <div id="screens">
       <!-- HOME -->
       <div class="screen" id="s-home">
+        <div id="home-top-bar"></div>
+        <div id="home-habits-row"></div>
         <div class="two-col">
           <div class="col">
             <div id="focus-wrap"></div>
@@ -1074,9 +1139,14 @@ body.dark #ai-panel{background:var(--surface)}
         <div class="two-col" style="align-items:start">
           <div class="col">
             <div class="section-title" id="j-date-lbl"></div>
+            <div id="j-prompt-card" style="display:none;padding:12px 14px;border-radius:var(--r-sm);background:var(--acc2-bg);border:1.5px solid rgba(193,18,31,.2);margin-bottom:10px">
+              <div style="font-size:.6rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--acc2);margin-bottom:4px">✏️ הנחיה להיום</div>
+              <div id="j-prompt-text" style="font-size:.82rem;color:var(--txt);line-height:1.55;font-style:italic"></div>
+            </div>
             <textarea class="j-ta" id="j-ta" placeholder="כתוב כאן מחשבות, הישגים, תכנונים..."></textarea>
             <div class="j-ft">
               <span class="j-wc" id="j-wc">0 מילים</span>
+              <span id="j-autosave-lbl" style="font-size:.65rem;color:var(--txt3)"></span>
               <button class="j-sv" id="j-save">שמור ✓</button>
             </div>
           </div>
@@ -1203,6 +1273,13 @@ body.dark #ai-panel{background:var(--surface)}
     </details>
     <div class="fl"><label class="flb" for="f-note">הערה</label>
       <textarea class="fi" id="f-note" style="min-height:60px;resize:vertical" placeholder="פרטים נוספים..."></textarea></div>
+    <div class="fl"><label class="flb" for="f-recur">חזרה</label>
+      <select class="fi" id="f-recur" style="padding:9px 12px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:var(--s2)">
+        <option value="none">ללא חזרה</option>
+        <option value="daily">כל יום</option>
+        <option value="weekly">כל שבוע</option>
+        <option value="monthly">כל חודש</option>
+      </select></div>
     <button class="sub-btn" id="f-sub">הוסף משימה ✓</button>
   </div>
 </div>
@@ -1340,6 +1417,7 @@ function taskHTML(t){
       <div class="trm">
         ${t.time?`<span class="tr-time">⏰ ${t.time}</span>`:''}
         <span class="tr-cat" style="background:${CAT_BG[t.cat||'general']};color:${CAT_TC[t.cat||'general']}">${CAT_L[t.cat||'general']}</span>
+        ${t.recurring&&t.recurring!=='none'?`<span class="tr-time" style="color:var(--sky)">🔁 ${t.recurring==='daily'?'יומי':t.recurring==='weekly'?'שבועי':'חודשי'}</span>`:''}
       </div></div>
     <div class="tr-pri ${t.priority==='high'?'ph':t.priority==='low'?'pl':'pm'}"></div>
     <div class="tr-acts">
@@ -1500,7 +1578,89 @@ function renderWeekTasks(){
     :`<div class="emp"><div class="emp-ico">🗓</div><div class="emp-t">אין משימות השבוע</div></div>`;
 }
 
-function renderHome(){renderHeader();renderFocusCard();renderTasksHome();renderTomorrowTasks();renderWeekTasks();updateNavBadge();}
+// ── DAILY QUOTES ───────────────────────────────────────────────────────
+const QUOTES=[
+  'כל יום הוא הזדמנות חדשה להתחיל מחדש.',
+  'הדרך הטובה ביותר לנבא את העתיד היא לברוא אותו.',
+  'גדולים עשו צעדים קטנים כל יום.',
+  'הצלחה היא סכום של מאמצים קטנים שחוזרים על עצמם.',
+  'אל תחכה. הזמן לעולם לא יהיה מושלם.',
+  'עשה היום מה שאחרים לא רוצים, ומחר תעשה מה שאחרים לא יכולים.',
+  'התחלה קטנה עדיפה על השלמות שנדחית.',
+  'כל מסע מתחיל בצעד אחד.',
+  'הצמיחה מתרחשת מחוץ לאזור הנוחות.',
+  'עקביות היא המפתח להצלחה ארוכת טווח.',
+  'אל תמדוד את ההתקדמות שלך בהשוואה לאחרים.',
+  'כוח לא מגיע מיכולת גופנית — הוא מגיע מרצון שלא ניתן לשבור.',
+  'החיים לא קורים לך — הם קורים ממך.',
+  'בחר אי נוחות זמנית על פני חרטה קבועה.',
+  'כל ניסיון כושל הוא צעד קדימה.',
+];
+function getDailyQuote(){const d=new Date();const idx=(d.getFullYear()*366+d.getMonth()*31+d.getDate())%QUOTES.length;return QUOTES[idx];}
+
+// ── HOME TOP BAR ────────────────────────────────────────────────────────
+function renderHomeTopBar(){
+  const td=today(),ts=db.tasks.filter(t=>t.date===td),done=ts.filter(t=>t.completed).length;
+  const streak=calcStreak();
+  const pct=ts.length?Math.round(done/ts.length*100):0;
+  $('home-top-bar').innerHTML=`
+    <div class="htb-quote">"${getDailyQuote()}"</div>
+    <div class="htb-stats">
+      <div class="htb-stat"><div class="htb-stat-n">${done}/${ts.length||0}</div><div class="htb-stat-l">היום</div></div>
+      <div class="htb-stat"><div class="htb-stat-n">${streak}🔥</div><div class="htb-stat-l">רצף</div></div>
+    </div>`;
+}
+
+// ── HABITS HOME ROW ─────────────────────────────────────────────────────
+function renderHomeHabits(){
+  if(!db.habits||!db.habits.length){$('home-habits-row').innerHTML='';return;}
+  const td=today(),logs=db.habitLogs[td]||[];
+  let cards=db.habits.map(h=>{
+    const done=logs.includes(h.id);
+    const streak=habitStreak(h.id);
+    return`<div class="hc${done?' done':''}" data-hid="${h.id}" style="${done?`border-color:${h.color};background:${h.color}18`:''}">
+      <div class="hc-icon">${h.icon}</div>
+      <div class="hc-name" style="${done?`color:${h.color}`:''}">${h.name}</div>
+      <div class="hc-streak">${done?'✓':streak?streak+'🔥':'—'}</div>
+    </div>`;
+  }).join('');
+  $('home-habits-row').innerHTML=`<div class="section-title" style="margin-bottom:8px">הרגלים</div><div class="habits-row-inner">${cards}</div>`;
+  $('home-habits-row').querySelectorAll('.hc').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const hid=el.dataset.hid,td2=today();
+      if(!db.habitLogs[td2])db.habitLogs[td2]=[];
+      const idx=db.habitLogs[td2].indexOf(hid);
+      if(idx>=0)db.habitLogs[td2].splice(idx,1);else{db.habitLogs[td2].push(hid);confetti(el);}
+      save();renderHomeHabits();renderHomeTopBar();
+    });
+  });
+}
+
+// ── RECURRING TASKS ─────────────────────────────────────────────────────
+function processRecurring(){
+  const td=today(),now=new Date(td);
+  const recurring=db.tasks.filter(t=>t.recurring&&t.recurring!=='none');
+  recurring.forEach(t=>{
+    const origin=new Date(t.date);
+    let shouldCreate=false;
+    if(t.recurring==='daily')shouldCreate=t.date<td;
+    else if(t.recurring==='weekly'){
+      const diffDays=Math.round((now-origin)/(86400000));
+      shouldCreate=diffDays>=7&&diffDays%7===0;
+    }else if(t.recurring==='monthly'){
+      shouldCreate=(now.getFullYear()>origin.getFullYear()||(now.getFullYear()===origin.getFullYear()&&now.getMonth()>origin.getMonth()))&&now.getDate()>=origin.getDate();
+    }
+    if(shouldCreate){
+      const alreadyExists=db.tasks.some(x=>x.recurringFrom===t.id&&x.date===td);
+      if(!alreadyExists){
+        db.tasks.push({...t,id:uid(),date:td,completed:false,recurringFrom:t.id,focused:false});
+      }
+    }
+  });
+  save();
+}
+
+function renderHome(){renderHomeTopBar();renderHomeHabits();renderHeader();renderFocusCard();renderTasksHome();renderTomorrowTasks();renderWeekTasks();updateNavBadge();}
 
 // ── CALENDAR ───────────────────────────────────────────────────────────
 function renderCal(){
@@ -1758,15 +1918,45 @@ function renderStats(){
 }
 
 // ── JOURNAL ────────────────────────────────────────────────────────────
+const J_PROMPTS=[
+  'מה הדבר הכי טוב שקרה לך היום, ולמה הוא חשוב?',
+  'מה למדת על עצמך השבוע?',
+  'מה אתה גאה בו מהיום?',
+  'מה היית רוצה לשנות בהתנהגות שלך ביחס לאחרים?',
+  'מה המטרה הכי גדולה שלך כרגע, ומה הצעד הבא?',
+  'תאר רגע קטן שמח שהיה לך היום.',
+  'מה הדאגה הכי גדולה שלך כרגע? איך אתה יכול להקטין אותה?',
+  'למי אתה אסיר תודה היום ולמה?',
+  'מה היית אומר לעצמך של לפני שנה?',
+  'מה הדבר שאתה רוצה להשיג עד סוף החודש?',
+  'מה גרם לך לחייך היום?',
+  'אם היה לך יום אחד ללא אחריות, מה היית עושה?',
+  'מה הטעות שלמדת ממנה הכי הרבה?',
+  'מה הגבול שאתה צריך להציב לעצמך?',
+  'מה מאנשים שסביבך אתה מעריץ ורוצה לפתח?',
+];
+function getDailyPrompt(){const d=new Date();const idx=(d.getFullYear()*366+d.getMonth()*31+d.getDate())%J_PROMPTS.length;return J_PROMPTS[idx];}
+
+let jAutoSaveTimer=null;
 function renderJournal(){
   const td=today();$('j-date-lbl').textContent=fmtFull(td);
   $('j-ta').value=db.notes[td]||'';updateWC();
+  // show daily prompt only if note is empty
+  const prompt=getDailyPrompt();
+  $('j-prompt-card').style.display='block';
+  $('j-prompt-text').textContent=prompt;
   const entries=Object.entries(db.notes).filter(([k,v])=>k!==td&&v.trim()).sort((a,b)=>b[0].localeCompare(a[0])).slice(0,8);
   $('j-hist').innerHTML=entries.length?entries.map(([d,txt])=>`<div class="j-entry"><div class="j-ed">${fmtFull(d)}</div><div class="j-et">${esc(txt.slice(0,140))}${txt.length>140?'…':''}</div></div>`).join(''):`<div class="emp"><div class="emp-ico">📖</div><div class="emp-t">אין רישומים קודמים</div></div>`;
 }
 function updateWC(){const w=$('j-ta').value.trim().split(/\s+/).filter(Boolean).length;$('j-wc').textContent=`${w} מילים`;}
-$('j-ta').addEventListener('input',updateWC);
-$('j-save').addEventListener('click',()=>{db.notes[today()]=$('j-ta').value;save();$('j-save').textContent='✓ נשמר!';setTimeout(()=>$('j-save').textContent='שמור ✓',1800);renderJournal();});
+function jSaveNow(){db.notes[today()]=$('j-ta').value;save();$('j-autosave-lbl').textContent='● נשמר';setTimeout(()=>$('j-autosave-lbl').textContent='',2000);}
+$('j-ta').addEventListener('input',()=>{
+  updateWC();
+  clearTimeout(jAutoSaveTimer);
+  $('j-autosave-lbl').textContent='';
+  jAutoSaveTimer=setTimeout(jSaveNow,1500);
+});
+$('j-save').addEventListener('click',()=>{jSaveNow();$('j-save').textContent='✓ נשמר!';setTimeout(()=>$('j-save').textContent='שמור ✓',1800);renderJournal();});
 
 // ── SEARCH ─────────────────────────────────────────────────────────────
 $('sb-search').addEventListener('input',e=>{
@@ -1783,7 +1973,7 @@ $('sb-search').addEventListener('input',e=>{
 // ── MODAL ──────────────────────────────────────────────────────────────
 let modalOpen=false;
 function openModal(date){
-  modalDate=date||today();$('f-date').value=modalDate;$('f-title').value='';$('f-time').value='';$('f-note').value='';
+  modalDate=date||today();$('f-date').value=modalDate;$('f-title').value='';$('f-time').value='';$('f-note').value='';$('f-recur').value='none';
   fCat='general';fPrio='med';
   document.querySelectorAll('.co').forEach(e=>e.classList.toggle('a',e.dataset.c==='general'));
   document.querySelectorAll('.po').forEach(e=>e.classList.toggle('a',e.dataset.p==='med'));
@@ -1798,7 +1988,8 @@ document.querySelectorAll('.co').forEach(e=>e.addEventListener('click',()=>{fCat
 document.querySelectorAll('.po').forEach(e=>e.addEventListener('click',()=>{fPrio=e.dataset.p;document.querySelectorAll('.po').forEach(x=>x.classList.remove('a'));e.classList.add('a');}));
 $('f-sub').addEventListener('click',()=>{
   const t=$('f-title').value.trim();if(!t)return $('f-title').focus();
-  db.tasks.push({id:uid(),title:t,date:$('f-date').value||today(),time:$('f-time').value,cat:fCat,priority:fPrio,completed:false,focused:false,note:$('f-note').value.trim()});
+  const recur=$('f-recur').value||'none';
+  db.tasks.push({id:uid(),title:t,date:$('f-date').value||today(),time:$('f-time').value,cat:fCat,priority:fPrio,completed:false,focused:false,note:$('f-note').value.trim(),recurring:recur});
   save();closeModal();renderHome();if(scr==='cal'){renderCal();renderCalDetail(calSel);}
 });
 $('f-title').addEventListener('keydown',e=>{if(e.key==='Enter')$('f-sub').click();});
@@ -2478,6 +2669,7 @@ async function shareTask(t){
 }
 
 // ── INIT ───────────────────────────────────────────────────────────────
+processRecurring();
 renderHome();
 // init notifications if already permitted
 if(settings.notif&&'Notification' in window&&Notification.permission==='granted'){
