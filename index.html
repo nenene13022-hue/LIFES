@@ -1036,7 +1036,6 @@ body.dark #ai-panel{background:var(--surface)}
       <!-- HOME -->
       <div class="screen" id="s-home">
         <div id="home-top-bar"></div>
-        <div id="home-habits-row"></div>
         <div class="two-col">
           <div class="col">
             <div id="focus-wrap"></div>
@@ -1660,7 +1659,7 @@ function processRecurring(){
   save();
 }
 
-function renderHome(){renderHomeTopBar();renderHomeHabits();renderHeader();renderFocusCard();renderTasksHome();renderTomorrowTasks();renderWeekTasks();updateNavBadge();}
+function renderHome(){renderHomeTopBar();renderHeader();renderFocusCard();renderTasksHome();renderTomorrowTasks();renderWeekTasks();updateNavBadge();}
 
 // ── CALENDAR ───────────────────────────────────────────────────────────
 function renderCal(){
@@ -2039,6 +2038,11 @@ function toggleAI(){aiOpen=!aiOpen;$('ai-panel').classList.toggle('v',aiOpen);$(
     const pos=getPos();origX=pos.x;origY=pos.y;
     dragging=true;moved=false;
     btn.classList.add('dragging');
+    // attach move/up only while dragging so document touchmove stays passive elsewhere
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('touchmove',onMove,{passive:false});
+    document.addEventListener('mouseup',onUp);
+    document.addEventListener('touchend',onUp);
     e.preventDefault();
   }
   function onMove(e){
@@ -2052,8 +2056,11 @@ function toggleAI(){aiOpen=!aiOpen;$('ai-panel').classList.toggle('v',aiOpen);$(
   function onUp(e){
     if(!dragging)return;
     dragging=false;btn.classList.remove('dragging');
+    document.removeEventListener('mousemove',onMove);
+    document.removeEventListener('touchmove',onMove);
+    document.removeEventListener('mouseup',onUp);
+    document.removeEventListener('touchend',onUp);
     if(!moved)toggleAI();
-    // save position
     localStorage.setItem('ai-btn-pos',JSON.stringify({l:btn.style.left,t:btn.style.top}));
   }
 
@@ -2063,20 +2070,14 @@ function toggleAI(){aiOpen=!aiOpen;$('ai-panel').classList.toggle('v',aiOpen);$(
       const s=JSON.parse(localStorage.getItem('ai-btn-pos')||'{}');
       if(s.l){btn.style.left=s.l;btn.style.top=s.t;btn.style.right='auto';btn.style.bottom='auto';return;}
     }catch(e){}
-    // default position: bottom-right with safe margin
     const w=window.innerWidth,h=window.innerHeight;
-    const bw=52,bh=52;
-    btn.style.left=(w-bw-16)+'px';
-    btn.style.top=(h-bh-20)+'px';
+    btn.style.left=(w-52-16)+'px';
+    btn.style.top=(h-52-20)+'px';
     btn.style.right='auto';btn.style.bottom='auto';
   })();
 
   btn.addEventListener('mousedown',onDown);
   btn.addEventListener('touchstart',onDown,{passive:false});
-  document.addEventListener('mousemove',onMove);
-  document.addEventListener('touchmove',onMove,{passive:false});
-  document.addEventListener('mouseup',onUp);
-  document.addEventListener('touchend',onUp);
 })();
 
 $('ai-key-dismiss').addEventListener('click',()=>{$('ai-key-row').style.display='none';});
