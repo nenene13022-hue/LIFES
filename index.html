@@ -1185,6 +1185,21 @@ body.dark #ai-panel{background:var(--surface)}
           <button class="stg-btn" id="test-notif-btn">🔔 שלח התראת בדיקה</button>
         </div>
 
+        <!-- ntfy push notifications -->
+        <div class="stg-section">
+          <div class="stg-section-title">📲 התראות לאייפון (ntfy)</div>
+          <div class="stg-row" style="flex-direction:column;align-items:flex-start;gap:8px">
+            <div class="stg-label">ערוץ ntfy אישי</div>
+            <div class="stg-desc" style="margin-bottom:4px">התקן את אפליקציית <strong>ntfy</strong> מה-App Store, הירשם לערוץ שלמטה — וקבל התראות גם כשהאפליקציה סגורה לגמרי.</div>
+            <div style="display:flex;gap:8px;width:100%">
+              <input id="ntfy-topic-inp" class="fi" style="flex:1;font-size:.8rem;direction:ltr" placeholder="שם ערוץ..." readonly>
+              <button id="ntfy-copy-btn" class="stg-btn" style="padding:8px 14px;white-space:nowrap">העתק</button>
+            </div>
+            <div style="font-size:.72rem;color:var(--txt3);line-height:1.5">1. הורד ntfy מ-App Store<br>2. פתח ← Subscribe to topic ← הדבק את שם הערוץ<br>3. שמור — וההתראות יגיעו!</div>
+            <button id="ntfy-test-btn" class="stg-btn" style="margin-top:4px">📲 שלח התראת בדיקה ל-ntfy</button>
+          </div>
+        </div>
+
         <!-- Appearance -->
         <div class="stg-section">
           <div class="stg-section-title">🎨 מראה</div>
@@ -2380,6 +2395,7 @@ function renderSettings(){
   const $testBtn=$('test-notif-btn');
   if($testBtn&&!$testBtn._wired){$testBtn._wired=true;
     $testBtn.addEventListener('click',sendTestNotif);}
+  initNtfyUI();
 
   const $exp=$('stg-export');
   if($exp&&!$exp._wired){$exp._wired=true;
@@ -2406,16 +2422,59 @@ async function requestNotifPerm(){
   return p==='granted';
 }
 
+// ── NTFY PUSH (works even when app is closed on iPhone) ────────────────
+function getNtfyTopic(){
+  let t=localStorage.getItem('lp_ntfy_topic');
+  if(!t){
+    // generate unique random topic
+    t='lifes-'+Math.random().toString(36).slice(2,8)+Math.random().toString(36).slice(2,8);
+    localStorage.setItem('lp_ntfy_topic',t);
+  }
+  return t;
+}
+
+async function sendNtfy(title,body,priority='default'){
+  const topic=getNtfyTopic();
+  try{
+    await fetch(`https://ntfy.sh/${topic}`,{
+      method:'POST',
+      headers:{'Title':title,'Priority':priority,'Tags':'bell'},
+      body
+    });
+  }catch(e){}
+}
+
+function initNtfyUI(){
+  const inp=$('ntfy-topic-inp');
+  if(inp)inp.value=getNtfyTopic();
+  const copy=$('ntfy-copy-btn');
+  if(copy&&!copy._wired){copy._wired=true;
+    copy.addEventListener('click',()=>{
+      navigator.clipboard?.writeText(getNtfyTopic()).then(()=>{copy.textContent='✓ הועתק!';setTimeout(()=>copy.textContent='העתק',2000);});
+    });
+  }
+  const test=$('ntfy-test-btn');
+  if(test&&!test._wired){test._wired=true;
+    test.addEventListener('click',async()=>{
+      test.textContent='שולח...';
+      await sendNtfy('LIFES ✦','✅ התראות ntfy עובדות! תקבל תזכורות למשימות.','high');
+      test.textContent='✓ נשלח!';setTimeout(()=>test.textContent='📲 שלח התראת בדיקה ל-ntfy',2500);
+    });
+  }
+}
+
 async function fireNotif(taskId,title,body){
-  // prefer SW showNotification (works on locked iOS screen in PWA mode)
+  // 1. ntfy — real push to iPhone even when app is closed
+  sendNtfy(title,body,'high');
+  // 2. SW showNotification — works when PWA is in background
   if('serviceWorker' in navigator){
     try{
       const reg=await navigator.serviceWorker.ready;
-      if(reg) { await reg.showNotification(title,{body,tag:taskId,vibrate:[200,100,200],requireInteraction:false}); return; }
+      if(reg) { reg.showNotification(title,{body,tag:taskId,vibrate:[200,100,200]}); }
     }catch(e){}
   }
-  // fallback: page-level (works when app is in foreground)
-  try{ new Notification(title,{body,tag:taskId,vibrate:[200,100,200]}); }catch(e){}
+  // 3. page-level fallback
+  try{ if(Notification.permission==='granted') new Notification(title,{body,tag:taskId}); }catch(e){}
 }
 
 function scheduleAllNotifs(){
