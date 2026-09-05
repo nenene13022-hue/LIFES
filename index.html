@@ -2433,17 +2433,26 @@ function getNtfyTopic(){
   return t;
 }
 
-async function sendNtfy(title,body,priority='default'){
+async function sendNtfy(title,body,priority='default',delaySec=0){
   const topic=getNtfyTopic();
+  const headers={'Title':encodeURIComponent(title),'Priority':priority,'Tags':'bell','Content-Type':'text/plain;charset=utf-8'};
+  if(delaySec>0)headers['Delay']=delaySec+'s';
   try{
-    const res=await fetch(`https://ntfy.sh/${topic}`,{
-      method:'POST',
-      headers:{'Title':encodeURIComponent(title),'Priority':priority,'Tags':'bell','Content-Type':'text/plain;charset=utf-8'},
-      body
-    });
+    const res=await fetch(`https://ntfy.sh/${topic}`,{method:'POST',headers,body});
     if(!res.ok)return{ok:false,err:`HTTP ${res.status}`};
     return{ok:true};
   }catch(e){return{ok:false,err:e.message||String(e)};}
+}
+
+// schedule ntfy on the SERVER — works even when app is completely closed
+async function scheduleNtfyForTask(t){
+  const advance=settings.notifAdvance||10;
+  const fireAt=new Date(`${t.date}T${t.time}`).getTime()-(advance*60000);
+  const now=Date.now();
+  const delaySec=Math.round((fireAt-now)/1000);
+  const body=`⏰ ${advance>0?advance+' דקות לפני: ':''}"${t.title}"`;
+  if(delaySec<-60)return; // already passed
+  await sendNtfy('LIFES ✦',body,'high',Math.max(0,delaySec));
 }
 
 function initNtfyUI(){
@@ -2490,14 +2499,20 @@ function scheduleAllNotifs(){
   notifTimers.forEach(t=>clearTimeout(t));notifTimers.clear();
   const now=Date.now();
   const advance=settings.notifAdvance||10;
-  // ntfy works without browser permission — schedule for all tasks with notif:true
-  db.tasks.filter(t=>!t.completed&&t.time&&t.date>=today()&&(t.notif||settings.notif)).forEach(t=>{
-    const dt=new Date(`${t.date}T${t.time}`);
-    const fireAt=dt.getTime()-(advance*60000);
+  const tasks=db.tasks.filter(t=>!t.completed&&t.time&&t.date>=today()&&(t.notif||settings.notif));
+  tasks.forEach(t=>{
+    // schedule on ntfy servers — works even when app is closed
+    scheduleNtfyForTask(t);
+    // also set local timer as backup (fires if app is open)
+    const fireAt=new Date(`${t.date}T${t.time}`).getTime()-(advance*60000);
     const delay=fireAt-now;
     if(delay>0&&delay<24*60*60*1000){
       const body=`⏰ ${advance>0?advance+' דקות לפני: ':''}"${t.title}"`;
-      const tid=setTimeout(()=>fireNotif(t.id,'LIFES ✦',body),delay);
+      const tid=setTimeout(()=>{
+        // local SW notification (in case ntfy is slow)
+        if('serviceWorker' in navigator)
+          navigator.serviceWorker.ready.then(r=>r.showNotification&&r.showNotification('LIFES ✦',{body,tag:t.id,vibrate:[200,100,200]})).catch(()=>{});
+      },delay);
       notifTimers.set(t.id,tid);
     }
   });
