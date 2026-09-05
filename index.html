@@ -2438,11 +2438,12 @@ async function sendNtfy(title,body,priority='default'){
   try{
     const res=await fetch(`https://ntfy.sh/${topic}`,{
       method:'POST',
-      headers:{'Title':title,'Priority':priority,'Tags':'bell','Content-Type':'text/plain;charset=utf-8'},
+      headers:{'Title':encodeURIComponent(title),'Priority':priority,'Tags':'bell','Content-Type':'text/plain;charset=utf-8'},
       body
     });
-    return res.ok;
-  }catch(e){return false;}
+    if(!res.ok)return{ok:false,err:`HTTP ${res.status}`};
+    return{ok:true};
+  }catch(e){return{ok:false,err:e.message||String(e)};}
 }
 
 function initNtfyUI(){
@@ -2458,13 +2459,13 @@ function initNtfyUI(){
   if(test&&!test._wired){test._wired=true;
     test.addEventListener('click',async()=>{
       test.textContent='שולח...';test.disabled=true;
-      const ok=await sendNtfy('LIFES ✦','✅ התראות ntfy עובדות! תקבל תזכורות למשימות.','high');
+      const res=await sendNtfy('LIFES','test ntfy notification','high');
       test.disabled=false;
-      if(ok){
+      if(res.ok){
         test.textContent='✓ נשלח! בדוק את אפליקציית ntfy';
       }else{
-        test.textContent='❌ שגיאה — בדוק אינטרנט';
-        alert('שגיאה בשליחה ל-ntfy.sh — ודא שיש אינטרנט ונסה שוב');
+        test.textContent='❌ שגיאה';
+        alert('שגיאה: '+res.err);
       }
       setTimeout(()=>test.textContent='📲 שלח התראת בדיקה ל-ntfy',3000);
     });
@@ -2473,7 +2474,7 @@ function initNtfyUI(){
 
 async function fireNotif(taskId,title,body){
   // 1. ntfy — real push to iPhone even when app is closed
-  sendNtfy(title,body,'high');
+  sendNtfy(title,body,'high').catch(()=>{});
   // 2. SW showNotification — works when PWA is in background
   if('serviceWorker' in navigator){
     try{
