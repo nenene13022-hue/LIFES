@@ -2406,22 +2406,16 @@ async function requestNotifPerm(){
   return p==='granted';
 }
 
-const NOTIF_ICON='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%23E63946"/><text y=".9em" font-size="72" x="50%" text-anchor="middle" font-family="sans-serif" fill="white">✦</text></svg>';
-
-async function swNotif(delay,taskId,title,body){
+async function fireNotif(taskId,title,body){
+  // prefer SW showNotification (works on locked iOS screen in PWA mode)
   if('serviceWorker' in navigator){
     try{
       const reg=await navigator.serviceWorker.ready;
-      if(reg&&reg.active){
-        reg.active.postMessage({type:'SCHEDULE_NOTIF',delay,taskId,title,body,icon:NOTIF_ICON});
-        return;
-      }
+      if(reg) { await reg.showNotification(title,{body,tag:taskId,vibrate:[200,100,200],requireInteraction:false}); return; }
     }catch(e){}
   }
-  setTimeout(()=>{
-    if(Notification.permission==='granted')
-      new Notification(title,{body,icon:NOTIF_ICON,tag:taskId,vibrate:[200,100,200]});
-  },delay);
+  // fallback: page-level (works when app is in foreground)
+  try{ new Notification(title,{body,tag:taskId,vibrate:[200,100,200]}); }catch(e){}
 }
 
 function scheduleAllNotifs(){
@@ -2433,13 +2427,9 @@ function scheduleAllNotifs(){
     const dt=new Date(`${t.date}T${t.time}`);
     const fireAt=dt.getTime()-(advance*60000);
     const delay=fireAt-now;
-    if(delay>0&&delay<7*24*60*60*1000){
+    if(delay>0&&delay<24*60*60*1000){ // only within next 24h so timer stays alive
       const body=`⏰ ${advance>0?advance+' דקות לפני: ':''}"${t.title}"`;
-      swNotif(delay,t.id,'LIFES ✦',body);
-      const tid=setTimeout(()=>{
-        if(Notification.permission==='granted')
-          new Notification('LIFES ✦',{body,icon:NOTIF_ICON,tag:t.id,vibrate:[200,100,200]});
-      },delay);
+      const tid=setTimeout(()=>fireNotif(t.id,'LIFES ✦',body),delay);
       notifTimers.set(t.id,tid);
     }
   });
@@ -2450,11 +2440,7 @@ async function sendTestNotif(){
   if(!ok){alert('לא ניתנה הרשאה להתראות — אנא אפשר בהגדרות הדפדפן/מכשיר');return;}
   settings.notif=true;localStorage.setItem('lp_notif','1');
   const $n=$('notif-toggle');if($n)$n.checked=true;
-  new Notification('LIFES ✦',{
-    body:'✅ התראות פועלות! תקבל תזכורות לפני משימות.',
-    icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%23E63946"/><text y=".9em" font-size="72" x="50%" text-anchor="middle" font-family="sans-serif" fill="white">✦</text></svg>',
-    vibrate:[200,100,200]
-  });
+  fireNotif('test','LIFES ✦','✅ התראות פועלות! תקבל תזכורות לפני משימות.');
 }
 
 // call after every task save — schedule if any task has notif:true OR global setting on
