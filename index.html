@@ -1421,7 +1421,7 @@ function taskHTML(t){
     <div class="tr-body">
       <div class="trt">${esc(t.title)}</div>
       <div class="trm">
-        ${t.time?`<span class="tr-time">⏰ ${t.time}</span>`:''}${t.notif?`<span class="tr-time" style="color:var(--acc2)">🔔</span>`:''}
+        ${t.time?`<span class="tr-time">${t.notif?'⏰':''} ${t.time}</span>`:''}
         <span class="tr-cat" style="background:${CAT_BG[t.cat||'general']};color:${CAT_TC[t.cat||'general']}">${CAT_L[t.cat||'general']}</span>
       </div></div>
     <div class="tr-pri ${t.priority==='high'?'ph':t.priority==='low'?'pl':'pm'}"></div>
@@ -2488,14 +2488,14 @@ async function fireNotif(taskId,title,body){
 
 function scheduleAllNotifs(){
   notifTimers.forEach(t=>clearTimeout(t));notifTimers.clear();
-  if(Notification.permission!=='granted')return;
   const now=Date.now();
   const advance=settings.notifAdvance||10;
+  // ntfy works without browser permission — schedule for all tasks with notif:true
   db.tasks.filter(t=>!t.completed&&t.time&&t.date>=today()&&(t.notif||settings.notif)).forEach(t=>{
     const dt=new Date(`${t.date}T${t.time}`);
     const fireAt=dt.getTime()-(advance*60000);
     const delay=fireAt-now;
-    if(delay>0&&delay<24*60*60*1000){ // only within next 24h so timer stays alive
+    if(delay>0&&delay<24*60*60*1000){
       const body=`⏰ ${advance>0?advance+' דקות לפני: ':''}"${t.title}"`;
       const tid=setTimeout(()=>fireNotif(t.id,'LIFES ✦',body),delay);
       notifTimers.set(t.id,tid);
@@ -2513,7 +2513,6 @@ async function sendTestNotif(){
 
 // call after every task save — schedule if any task has notif:true OR global setting on
 function scheduleNotifsIfEnabled(){
-  if(Notification.permission!=='granted')return;
   const hasPerTask=db.tasks.some(t=>t.notif&&!t.completed&&t.time&&t.date>=today());
   if(settings.notif||hasPerTask)scheduleAllNotifs();
 }
@@ -2701,9 +2700,7 @@ async function shareTask(t){
 // ── INIT ───────────────────────────────────────────────────────────────
 renderHome();
 // init notifications — schedule all tasks with notif:true on load
-if('Notification' in window && Notification.permission==='granted'){
-  scheduleNotifsIfEnabled();
-}
+scheduleNotifsIfEnabled();
 
 // ── PWA MANIFEST (inline blob) ─────────────────────────────────────────
 (function(){
