@@ -1940,10 +1940,16 @@ $('f-notif').addEventListener('change',async()=>{
     if(!ok){$('f-notif').checked=false;alert('אנא אפשר התראות בהגדרות הדפדפן/מכשיר');}
   }
 });
-$('f-sub').addEventListener('click',()=>{
+$('f-sub').addEventListener('click',async()=>{
   const t=$('f-title').value.trim();if(!t)return $('f-title').focus();
-  db.tasks.push({id:uid(),title:t,date:$('f-date').value||today(),time:$('f-time').value,cat:fCat,priority:fPrio,completed:false,focused:false,note:$('f-note').value.trim(),notif:$('f-notif').checked&&!!$('f-time').value});
+  const hasNotif=$('f-notif').checked&&!!$('f-time').value;
+  const newTask={id:uid(),title:t,date:$('f-date').value||today(),time:$('f-time').value,cat:fCat,priority:fPrio,completed:false,focused:false,note:$('f-note').value.trim(),notif:hasNotif};
+  db.tasks.push(newTask);
   save();closeModal();renderHome();if(scr==='cal'){renderCal();renderCalDetail(calSel);}
+  if(hasNotif){
+    const res=await scheduleNtfyForTask(newTask);
+    if(res&&res.ok===false)alert('שגיאה בתזמון התראה ל-ntfy:\n'+res.err+'\n\nודא שהגדרת ערוץ ntfy בהגדרות');
+  }
 });
 $('f-title').addEventListener('keydown',e=>{if(e.key==='Enter')$('f-sub').click();});
 
@@ -2451,8 +2457,8 @@ async function scheduleNtfyForTask(t){
   const now=Date.now();
   const delaySec=Math.round((fireAt-now)/1000);
   const body=`⏰ ${advance>0?advance+' דקות לפני: ':''}"${t.title}"`;
-  if(delaySec<-60)return; // already passed
-  await sendNtfy('LIFES ✦',body,'high',Math.max(0,delaySec));
+  if(delaySec<-60)return{ok:false,err:'זמן ההתראה כבר עבר'};
+  return await sendNtfy('LIFES ✦',body,'high',Math.max(0,delaySec));
 }
 
 function initNtfyUI(){
