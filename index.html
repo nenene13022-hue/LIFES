@@ -1035,7 +1035,6 @@ body.dark #ai-panel{background:var(--surface)}
     <div id="screens">
       <!-- HOME -->
       <div class="screen" id="s-home">
-        <div id="home-top-bar"></div>
         <div class="two-col">
           <div class="col">
             <div id="focus-wrap"></div>
@@ -1590,16 +1589,7 @@ const QUOTES=[
 function getDailyQuote(){const d=new Date();const idx=(d.getFullYear()*366+d.getMonth()*31+d.getDate())%QUOTES.length;return QUOTES[idx];}
 
 // ── HOME TOP BAR ────────────────────────────────────────────────────────
-function renderHomeTopBar(){
-  const td=today(),ts=db.tasks.filter(t=>t.date===td),done=ts.filter(t=>t.completed).length;
-  const streak=calcStreak();
-  const pct=ts.length?Math.round(done/ts.length*100):0;
-  $('home-top-bar').innerHTML=`
-    <div class="htb-stats" style="width:100%;justify-content:center">
-      <div class="htb-stat"><div class="htb-stat-n">${done}/${ts.length||0}</div><div class="htb-stat-l">היום</div></div>
-      <div class="htb-stat"><div class="htb-stat-n">${streak}🔥</div><div class="htb-stat-l">רצף</div></div>
-    </div>`;
-}
+function renderHomeTopBar(){}
 
 // ── HABITS HOME ROW ─────────────────────────────────────────────────────
 function renderHomeHabits(){
