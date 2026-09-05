@@ -2436,17 +2436,18 @@ function getNtfyTopic(){
 async function sendNtfy(title,body,priority='default'){
   const topic=getNtfyTopic();
   try{
-    await fetch(`https://ntfy.sh/${topic}`,{
+    const res=await fetch(`https://ntfy.sh/${topic}`,{
       method:'POST',
-      headers:{'Title':title,'Priority':priority,'Tags':'bell'},
+      headers:{'Title':title,'Priority':priority,'Tags':'bell','Content-Type':'text/plain;charset=utf-8'},
       body
     });
-  }catch(e){}
+    return res.ok;
+  }catch(e){return false;}
 }
 
 function initNtfyUI(){
   const inp=$('ntfy-topic-inp');
-  if(inp)inp.value=getNtfyTopic();
+  if(inp)inp.value=getNtfyTopic();  // show just the topic name
   const copy=$('ntfy-copy-btn');
   if(copy&&!copy._wired){copy._wired=true;
     copy.addEventListener('click',()=>{
@@ -2456,9 +2457,16 @@ function initNtfyUI(){
   const test=$('ntfy-test-btn');
   if(test&&!test._wired){test._wired=true;
     test.addEventListener('click',async()=>{
-      test.textContent='שולח...';
-      await sendNtfy('LIFES ✦','✅ התראות ntfy עובדות! תקבל תזכורות למשימות.','high');
-      test.textContent='✓ נשלח!';setTimeout(()=>test.textContent='📲 שלח התראת בדיקה ל-ntfy',2500);
+      test.textContent='שולח...';test.disabled=true;
+      const ok=await sendNtfy('LIFES ✦','✅ התראות ntfy עובדות! תקבל תזכורות למשימות.','high');
+      test.disabled=false;
+      if(ok){
+        test.textContent='✓ נשלח! בדוק את אפליקציית ntfy';
+      }else{
+        test.textContent='❌ שגיאה — בדוק אינטרנט';
+        alert('שגיאה בשליחה ל-ntfy.sh — ודא שיש אינטרנט ונסה שוב');
+      }
+      setTimeout(()=>test.textContent='📲 שלח התראת בדיקה ל-ntfy',3000);
     });
   }
 }
