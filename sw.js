@@ -1,4 +1,7 @@
-const CACHE = 'lifes-v13';
+const CACHE = 'lifes-v14';
+
+// store pending notification timers so they survive page navigation
+const pendingNotifs = new Map();
 
 self.addEventListener('install', e => {
   self.skipWaiting();
@@ -11,8 +14,28 @@ self.addEventListener('activate', e => {
   self.clients.claim();
 });
 
+// receive notification schedule from main app
+self.addEventListener('message', e => {
+  if(!e.data || e.data.type !== 'SCHEDULE_NOTIF') return;
+  const {delay, taskId, title, body, icon} = e.data;
+  // clear any existing timer for this task
+  if(pendingNotifs.has(taskId)) clearTimeout(pendingNotifs.get(taskId));
+  const tid = setTimeout(() => {
+    pendingNotifs.delete(taskId);
+    self.registration.showNotification(title, {
+      body,
+      icon,
+      badge: icon,
+      tag: taskId,
+      vibrate: [200, 100, 200],
+      data: {taskId}
+    });
+  }, delay);
+  pendingNotifs.set(taskId, tid);
+});
+
 self.addEventListener('fetch', e => {
-  // HTML — always network first so updates arrive immediately
+  // HTML — network first so updates arrive immediately
   if(e.request.mode === 'navigate' || e.request.url.endsWith('.html') || e.request.url.endsWith('/')) {
     e.respondWith(
       fetch(e.request).then(res => {
@@ -39,5 +62,8 @@ self.addEventListener('fetch', e => {
 
 self.addEventListener('notificationclick', e => {
   e.notification.close();
-  e.waitUntil(clients.openWindow('/'));
+  e.waitUntil(clients.matchAll({type:'window'}).then(list => {
+    if(list.length) return list[0].focus();
+    return clients.openWindow('/');
+  }));
 });

@@ -1266,6 +1266,10 @@ body.dark #ai-panel{background:var(--surface)}
           </div></div>
       </div>
     </details>
+    <div class="fl" id="f-notif-row" style="display:none;align-items:center;justify-content:space-between;padding:10px 0">
+      <label class="flb" style="margin-bottom:0">🔔 שלח התראה</label>
+      <label class="toggle-sw"><input type="checkbox" id="f-notif"><span class="toggle-knob"></span></label>
+    </div>
     <div class="fl"><label class="flb" for="f-note">הערה</label>
       <textarea class="fi" id="f-note" style="min-height:60px;resize:vertical" placeholder="פרטים נוספים..."></textarea></div>
     <button class="sub-btn" id="f-sub">הוסף משימה ✓</button>
@@ -1906,7 +1910,7 @@ $('sb-search').addEventListener('input',e=>{
 // ── MODAL ──────────────────────────────────────────────────────────────
 let modalOpen=false;
 function openModal(date){
-  modalDate=date||today();$('f-date').value=modalDate;$('f-title').value='';$('f-time').value='';$('f-note').value='';
+  modalDate=date||today();$('f-date').value=modalDate;$('f-title').value='';$('f-time').value='';$('f-note').value='';$('f-notif').checked=false;$('f-notif-row').style.display='none';
   fCat='general';fPrio='med';
   document.querySelectorAll('.co').forEach(e=>e.classList.toggle('a',e.dataset.c==='general'));
   document.querySelectorAll('.po').forEach(e=>e.classList.toggle('a',e.dataset.p==='med'));
@@ -1919,9 +1923,21 @@ $('ovl').addEventListener('click',e=>{if(e.target===$('ovl'))closeModal();});
 $('sb-add').addEventListener('click',()=>openModal(today()));
 document.querySelectorAll('.co').forEach(e=>e.addEventListener('click',()=>{fCat=e.dataset.c;document.querySelectorAll('.co').forEach(x=>x.classList.remove('a'));e.classList.add('a');}));
 document.querySelectorAll('.po').forEach(e=>e.addEventListener('click',()=>{fPrio=e.dataset.p;document.querySelectorAll('.po').forEach(x=>x.classList.remove('a'));e.classList.add('a');}));
+// show/hide notification toggle when time is set
+$('f-time').addEventListener('change',()=>{
+  const hasTime=!!$('f-time').value;
+  $('f-notif-row').style.display=hasTime?'flex':'none';
+  if(!hasTime)$('f-notif').checked=false;
+});
+$('f-notif').addEventListener('change',async()=>{
+  if($('f-notif').checked){
+    const ok=await requestNotifPerm();
+    if(!ok){$('f-notif').checked=false;alert('אנא אפשר התראות בהגדרות הדפדפן/מכשיר');}
+  }
+});
 $('f-sub').addEventListener('click',()=>{
   const t=$('f-title').value.trim();if(!t)return $('f-title').focus();
-  db.tasks.push({id:uid(),title:t,date:$('f-date').value||today(),time:$('f-time').value,cat:fCat,priority:fPrio,completed:false,focused:false,note:$('f-note').value.trim()});
+  db.tasks.push({id:uid(),title:t,date:$('f-date').value||today(),time:$('f-time').value,cat:fCat,priority:fPrio,completed:false,focused:false,note:$('f-note').value.trim(),notif:$('f-notif').checked&&!!$('f-time').value});
   save();closeModal();renderHome();if(scr==='cal'){renderCal();renderCalDetail(calSel);}
 });
 $('f-title').addEventListener('keydown',e=>{if(e.key==='Enter')$('f-sub').click();});
@@ -2400,24 +2416,39 @@ async function requestNotifPerm(){
   return p==='granted';
 }
 
+const NOTIF_ICON='data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%23E63946"/><text y=".9em" font-size="72" x="50%" text-anchor="middle" font-family="sans-serif" fill="white">✦</text></svg>';
+
+async function swNotif(delay,taskId,title,body){
+  if('serviceWorker' in navigator){
+    try{
+      const reg=await navigator.serviceWorker.ready;
+      if(reg&&reg.active){
+        reg.active.postMessage({type:'SCHEDULE_NOTIF',delay,taskId,title,body,icon:NOTIF_ICON});
+        return;
+      }
+    }catch(e){}
+  }
+  setTimeout(()=>{
+    if(Notification.permission==='granted')
+      new Notification(title,{body,icon:NOTIF_ICON,tag:taskId,vibrate:[200,100,200]});
+  },delay);
+}
+
 function scheduleAllNotifs(){
-  // clear existing
   notifTimers.forEach(t=>clearTimeout(t));notifTimers.clear();
-  if(!settings.notif||Notification.permission!=='granted')return;
+  if(Notification.permission!=='granted')return;
   const now=Date.now();
-  db.tasks.filter(t=>!t.completed&&t.time&&t.date>=today()).forEach(t=>{
+  const advance=settings.notifAdvance||10;
+  db.tasks.filter(t=>!t.completed&&t.time&&t.date>=today()&&(t.notif||settings.notif)).forEach(t=>{
     const dt=new Date(`${t.date}T${t.time}`);
-    const fireAt=dt.getTime()-(settings.notifAdvance*60000);
+    const fireAt=dt.getTime()-(advance*60000);
     const delay=fireAt-now;
-    if(delay>0&&delay<7*24*60*60*1000){// within 7 days
+    if(delay>0&&delay<7*24*60*60*1000){
+      const body=`⏰ ${advance>0?advance+' דקות לפני: ':''}"${t.title}"`;
+      swNotif(delay,t.id,'LIFES ✦',body);
       const tid=setTimeout(()=>{
-        new Notification('LIFES ✦',{
-          body:`⏰ ${settings.notifAdvance>0?settings.notifAdvance+' דקות לפני: ':''}"${t.title}"`,
-          icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%23E63946"/><text y=".9em" font-size="72" x="50%" text-anchor="middle" font-family="sans-serif" fill="white">✦</text></svg>',
-          badge:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="22" fill="%23E63946"/></svg>',
-          tag:t.id,vibrate:[200,100,200],
-          data:{taskId:t.id}
-        });
+        if(Notification.permission==='granted')
+          new Notification('LIFES ✦',{body,icon:NOTIF_ICON,tag:t.id,vibrate:[200,100,200]});
       },delay);
       notifTimers.set(t.id,tid);
     }
