@@ -1406,7 +1406,7 @@ function taskHTML(t){
     <div class="tr-body">
       <div class="trt">${esc(t.title)}</div>
       <div class="trm">
-        ${t.time?`<span class="tr-time">⏰ ${t.time}</span>`:''}
+        ${t.time?`<span class="tr-time">⏰ ${t.time}</span>`:''}${t.notif?`<span class="tr-time" style="color:var(--acc2)">🔔</span>`:''}
         <span class="tr-cat" style="background:${CAT_BG[t.cat||'general']};color:${CAT_TC[t.cat||'general']}">${CAT_L[t.cat||'general']}</span>
       </div></div>
     <div class="tr-pri ${t.priority==='high'?'ph':t.priority==='low'?'pl':'pm'}"></div>
@@ -2457,9 +2457,11 @@ async function sendTestNotif(){
   });
 }
 
-// call after every task save
+// call after every task save — schedule if any task has notif:true OR global setting on
 function scheduleNotifsIfEnabled(){
-  if(settings.notif&&Notification.permission==='granted')scheduleAllNotifs();
+  if(Notification.permission!=='granted')return;
+  const hasPerTask=db.tasks.some(t=>t.notif&&!t.completed&&t.time&&t.date>=today());
+  if(settings.notif||hasPerTask)scheduleAllNotifs();
 }
 
 // ── SWIPE-TO-COMPLETE ──────────────────────────────────────────────────
@@ -2644,9 +2646,9 @@ async function shareTask(t){
 
 // ── INIT ───────────────────────────────────────────────────────────────
 renderHome();
-// init notifications if already permitted
-if(settings.notif&&'Notification' in window&&Notification.permission==='granted'){
-  scheduleAllNotifs();
+// init notifications — schedule all tasks with notif:true on load
+if('Notification' in window && Notification.permission==='granted'){
+  scheduleNotifsIfEnabled();
 }
 
 // ── PWA MANIFEST (inline blob) ─────────────────────────────────────────
